@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEBI — Núcleo de Ensino Bíblico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:       #1A2F55;
+      --navy-light: #243C6B;
+      --navy-dark:  #0F1D35;
+      --gold:       #B8882A;
+      --gold-light: #D4A84B;
+      --gold-pale:  #F5EDD8;
+      --cream:      #FAFAF6;
+      --white:      #FFFFFF;
+      --ink:        #1C1C1C;
+      --text:       #2D3748;
+      --muted:      #718096;
+      --border:     #E8E4DC;
+      --shadow:     rgba(26,47,85,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── UTILS ── */
+    .serif  { font-family: 'Cormorant Garamond', serif; }
+    .gold   { color: var(--gold); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-light);
+      padding: 5px 14px;
+      border-radius: 2px;
+      background: rgba(184,136,42,.06);
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold);
+      color: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--navy);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 13px 27px;
+      border: 1.5px solid var(--navy);
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(250,250,246,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: .06em;
+      line-height: 1;
+    }
+    .nav-logo-sub {
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: .01em;
+      transition: color .15s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-cta { display: flex; align-items: center; gap: 12px; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: var(--navy-dark);
+      overflow: hidden;
+      padding-top: 68px;
+      padding-bottom: 160px; /* espaço para a barra de stats absoluta no rodapé */
+    }
+    /* vídeo de fundo */
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center right;
+      z-index: 0;
+    }
+    /* degradê esquerda→direita: navy sólido à esq, transparente à dir */
+    .hero-video-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        to right,
+        #0F1D35 0%,
+        #0F1D35 28%,
+        rgba(15,29,53,0.88) 45%,
+        rgba(15,29,53,0.50) 62%,
+        rgba(15,29,53,0.18) 80%,
+        rgba(15,29,53,0.04) 100%
+      );
+    }
+    /* grid sutil sobre o vídeo apenas na metade esquerda */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: linear-gradient(to right, black 0%, black 40%, transparent 70%);
+      -webkit-mask-image: linear-gradient(to right, black 0%, black 40%, transparent 70%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .hero-eyebrow-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero-eyebrow-text {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(46px, 6vw, 80px);
+      font-weight: 600;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    .hero-desc {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: rgba(255,255,255,.7);
+      max-width: 520px;
+      margin-bottom: 40px;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-hero-primary {
+      background: var(--gold);
+      color: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all .2s;
+    }
+    .btn-hero-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-hero-ghost {
+      color: rgba(255,255,255,.85);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: .02em;
+      padding: 15px 24px;
+      border: 1.5px solid rgba(255,255,255,.25);
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      transition: all .2s;
+    }
+    .btn-hero-ghost:hover { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.06); }
+    .hero-stats {
+      position: absolute;
+      bottom: 48px;
+      left: 0;
+      right: 0;
+    }
+    .hero-stats-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 780px;
+    }
+    .hero-stat {
+      padding: 20px 28px;
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+    }
+    .hero-stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .hero-stat-number span { color: var(--gold-light); font-size: 22px; }
+    .hero-stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 96px 0; }
+    .section-header { margin-bottom: 56px; }
+    .section-header .tag { margin-bottom: 16px; }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 4vw, 52px);
+      font-weight: 600;
+      color: var(--navy);
+      line-height: 1.12;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 540px;
+    }
+
+    /* ── PROPOSTA ── */
+    .proposta { background: var(--white); }
+    .proposta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .proposta-visual {
+      position: relative;
+    }
+    .proposta-image-wrap {
+      aspect-ratio: 4/5;
+      background: var(--navy);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .proposta-image-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 60%, rgba(184,136,42,.3) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .proposta-image-icon {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 120px;
+      color: rgba(255,255,255,.06);
+      line-height: 1;
+      user-select: none;
+    }
+    .proposta-badge {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      background: var(--gold);
+      color: var(--white);
+      padding: 20px 24px;
+      border-radius: 3px;
+      text-align: center;
+    }
+    .proposta-badge-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+    }
+    .proposta-badge-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      opacity: .85;
+    }
+    .proposta-content { padding-top: 12px; }
+    .proposta-content .section-title { margin-bottom: 24px; }
+    .proposta-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 36px;
+    }
+    .proposta-pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .pillar {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: var(--cream);
+      border-radius: 3px;
+      border-left: 3px solid var(--gold);
+    }
+    .pillar-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 2px;
+      background: var(--gold-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pillar-icon svg { width: 20px; height: 20px; color: var(--gold); }
+    .pillar-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .pillar-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TRILHAS ── */
+    .trilhas { background: var(--cream); }
+    .trilhas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .trilha-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px 28px;
+      transition: all .25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .trilha-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform .25s;
+    }
+    .trilha-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px var(--shadow); border-color: transparent; }
+    .trilha-card:hover::before { transform: scaleX(1); }
+    .trilha-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gold-pale);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    .trilha-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .trilha-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .trilha-count {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: var(--gold);
+    }
+
+    /* ── CURSOS ── */
+    .cursos { background: var(--white); }
+    .cursos-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 48px;
+    }
+    .cursos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .curso-card {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all .25s;
+      background: var(--white);
+    }
+    .curso-card:hover { box-shadow: 0 12px 40px var(--shadow); transform: translateY(-3px); }
+    .curso-thumb {
+      height: 160px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .curso-thumb-icon {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 72px;
+      color: rgba(255,255,255,.1);
+      line-height: 1;
+    }
+    .curso-thumb-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.2);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+    .curso-thumb-format {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--gold);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+    .curso-body { padding: 24px; }
+    .curso-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .curso-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .curso-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .curso-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .curso-meta-item svg { width: 14px; height: 14px; }
+
+    /* ── METODOLOGIA ── */
+    .metodologia {
+      background: var(--navy-dark);
+      position: relative;
+      overflow: hidden;
+    }
+    .metodologia-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 80% 20%, rgba(184,136,42,.08) 0%, transparent 45%),
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: auto, 40px 40px, 40px 40px;
+    }
+    .metodologia .container { position: relative; z-index: 2; }
+    .metodologia .tag { border-color: rgba(184,136,42,.5); }
+    .metodologia .section-title { color: var(--white); }
+    .metodologia .section-desc { color: rgba(255,255,255,.55); }
+    .metodo-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .metodo-step {
+      padding: 36px 28px;
+      background: rgba(255,255,255,.03);
+      position: relative;
+    }
+    .metodo-step-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: rgba(255,255,255,.06);
+      line-height: 1;
+      margin-bottom: -8px;
+    }
+    .metodo-step-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(184,136,42,.15);
+      border: 1px solid rgba(184,136,42,.25);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+    .metodo-step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .metodo-step-desc {
+      font-size: 13.5px;
+      color: rgba(255,255,255,.5);
+      line-height: 1.6;
+    }
+
+    /* ── FORMATOS ── */
+    .formatos { background: var(--cream); }
+    .formatos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .formato-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px 32px;
+      text-align: center;
+      transition: all .25s;
+    }
+    .formato-card:hover { box-shadow: 0 12px 40px var(--shadow); transform: translateY(-4px); }
+    .formato-emoji {
+      font-size: 40px;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .formato-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .formato-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .formato-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--navy);
+      background: var(--gold-pale);
+      padding: 5px 14px;
+      border-radius: 2px;
+    }
+
+    /* ── SOBRE ── */
+    .sobre { background: var(--white); }
+    .sobre-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .sobre-content .section-title { margin-bottom: 24px; }
+    .sobre-body {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .sobre-blockquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      margin: 32px 0;
+      background: var(--cream);
+      border-radius: 0 3px 3px 0;
+    }
+    .sobre-blockquote p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 21px;
+      font-style: italic;
+      color: var(--navy);
+      line-height: 1.5;
+    }
+    .sobre-blockquote cite {
+      display: block;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .sobre-visual {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sobre-img-wrap {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+    .sobre-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .sobre-img-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 48px 28px 24px;
+      background: linear-gradient(to top, rgba(15,29,53,0.94) 0%, rgba(15,29,53,0.55) 65%, transparent 100%);
+    }
+    .sobre-church-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .sobre-church-sub {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+    .sobre-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 32px;
+      width: 100%;
+    }
+    .sobre-tl-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--white);
+      border-radius: 2px;
+      padding: 12px 16px;
+    }
+    .sobre-tl-year {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      min-width: 52px;
+    }
+    .sobre-tl-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    /* ── DEPOIMENTOS ── */
+    .depoimentos { background: var(--cream); }
+    .depo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .depo-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px 28px;
+      position: relative;
+    }
+    .depo-quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px;
+      color: var(--gold-pale);
+      line-height: .8;
+      margin-bottom: 8px;
+    }
+    .depo-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    .depo-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .depo-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--gold) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    .depo-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+    .depo-role {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .depo-stars {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 16px;
+    }
+    .depo-stars span { color: var(--gold); font-size: 14px; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--navy);
+      padding: 96px 0;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(184,136,42,.12) 0%, transparent 60%);
+    }
+    .cta-section .container { position: relative; z-index: 2; }
+    .cta-section .tag { border-color: rgba(184,136,42,.4); }
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 62px);
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.1;
+      margin: 20px 0 16px;
+    }
+    .cta-title em { color: var(--gold-light); font-style: italic; }
+    .cta-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,.6);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-cta-primary {
+      background: var(--gold);
+      color: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-cta-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-cta-ghost {
+      color: rgba(255,255,255,.8);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 16px 28px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      background: transparent;
+      transition: all .2s;
+    }
+    .btn-cta-ghost:hover { border-color: rgba(255,255,255,.5); color: var(--white); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy-dark);
+      padding: 64px 0 32px;
+      color: rgba(255,255,255,.5);
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .footer-brand-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: .06em;
+      margin-bottom: 4px;
+    }
+    .footer-brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .footer-brand-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(255,255,255,.4);
+      max-width: 280px;
+    }
+    .footer-col-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+      margin-bottom: 20px;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-links a {
+      font-size: 13.5px;
+      color: rgba(255,255,255,.4);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 28px;
+    }
+    .footer-copy {
+      font-size: 12.5px;
+      color: rgba(255,255,255,.3);
+    }
+    .footer-church {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,.25);
+      text-transform: uppercase;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: var(--gold);
+      margin: 0 auto 0 0;
+    }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announcement {
+      background: var(--gold);
+      color: var(--white);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+    .announcement strong { font-weight: 700; }
+
+    /* ── SCROLL ANIMATIONS ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: .1s; }
+    .fade-up:nth-child(3) { transition-delay: .2s; }
+    .fade-up:nth-child(4) { transition-delay: .3s; }
+    .fade-up:nth-child(5) { transition-delay: .4s; }
+    .fade-up:nth-child(6) { transition-delay: .5s; }
+
+    /* ── RESPONSIVE (simplified for mockup) ── */
+    @media (max-width: 900px) {
+      .hero-stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .proposta-grid, .sobre-grid { grid-template-columns: 1fr; gap: 40px; }
+      .trilhas-grid, .cursos-grid, .formatos-grid, .depo-grid { grid-template-columns: 1fr; }
+      .metodo-steps { grid-template-columns: repeat(2, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ANNOUNCEMENT -->
+  <div class="announcement">
+    📖 &nbsp;Turma 2026.1 com inscrições abertas — <strong>vagas limitadas!</strong> &nbsp;·&nbsp; Conheça os cursos disponíveis
+  </div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="nav-logo-mark">NEBI</span>
+        <span class="nav-logo-sub">Núcleo de Ensino Bíblico</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#trilhas">Trilhas</a></li>
+        <li><a href="#cursos">Cursos</a></li>
+        <li><a href="#metodologia">Como Funciona</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="#cursos" class="btn-outline">Ver Cursos</a>
+        <a href="#cta" class="btn-primary">Inscreva-se</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto">
+      <source src="video_top.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-video-overlay"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <div class="hero-eyebrow-line"></div>
+          <span class="hero-eyebrow-text">Primeira Igreja Batista de Mogi das Cruzes</span>
+        </div>
+        <h1>
+          Fundado<br/>
+          na <em>Palavra.</em><br/>
+          Formado<br/>
+          para a Vida.
+        </h1>
+        <p class="hero-desc">
+          O NEBI é o braço de educação teológica da nossa igreja — um espaço sério, acessível e transformador para quem quer crescer no conhecimento das Escrituras e na fé batista.
+        </p>
+        <div class="hero-actions">
+          <a href="#cursos" class="btn-hero-primary">
+            Explorar Cursos
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#metodologia" class="btn-hero-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+            Como Funciona
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="container">
+        <div class="hero-stats-inner">
+          <div class="hero-stat">
+            <div class="hero-stat-number">18<span>+</span></div>
+            <div class="hero-stat-label">Cursos ativos</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">1.2<span>mil</span></div>
+            <div class="hero-stat-label">Alunos formados</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">12<span>anos</span></div>
+            <div class="hero-stat-label">De formação</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">6<span> áreas</span></div>
+            <div class="hero-stat-label">De ensino</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROPOSTA DE VALOR -->
+  <section class="proposta" id="proposta">
+    <div class="container">
+      <div class="proposta-grid">
+        <div class="proposta-visual">
+          <div class="proposta-image-wrap">
+            <img src="pibmogi.png" alt="Primeira Igreja Batista de Mogi das Cruzes" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;" />
+          </div>
+          <div class="proposta-badge">
+            <span class="proposta-badge-number">PIB</span>
+            <span class="proposta-badge-label">Mogi das Cruzes</span>
+          </div>
+        </div>
+        <div class="proposta-content">
+          <div class="tag">O que é o NEBI</div>
+          <h2 class="section-title serif" style="margin-top:16px;">
+            Educação teológica que transforma,<br/>não apenas informa.
+          </h2>
+          <p class="proposta-body">
+            O Núcleo de Ensino Bíblico nasceu do compromisso da <strong>Primeira Igreja Batista de Mogi das Cruzes</strong> com a formação sólida dos seus membros. Acreditamos que o conhecimento das Escrituras é o alicerce de uma fé madura, de famílias saudáveis e de uma comunidade que impacta.
+          </p>
+          <div class="proposta-pillars">
+            <div class="pillar">
+              <div class="pillar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <div>
+                <div class="pillar-title">Ensino Fiel às Escrituras</div>
+                <div class="pillar-desc">Conteúdo rigoroso, fiel à tradição reformada batista, com metodologia moderna e acessível.</div>
+              </div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <div class="pillar-title">Comunidade de Aprendizado</div>
+                <div class="pillar-desc">Aprenda com outros membros. Cada curso é também um espaço de comunhão e crescimento coletivo.</div>
+              </div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <div class="pillar-title">Aplicação para a Vida Real</div>
+                <div class="pillar-desc">Não ensinamos só sobre a Palavra — ensinamos a vivê-la. Cada trilha tem foco em transformação prática.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRILHAS DE ENSINO -->
+  <section class="trilhas" id="trilhas">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Áreas de Formação</span>
+        <h2 class="section-title serif" style="margin-top:16px;">Trilhas de Ensino</h2>
+        <p class="section-desc">Seis áreas de formação pensadas para atender diferentes momentos e necessidades da jornada de fé.</p>
+      </div>
+      <div class="trilhas-grid">
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">📖</div>
+          <div class="trilha-name">Fundamentos da Fé</div>
+          <div class="trilha-desc">Doutrinas essenciais do cristianismo evangélico e a identidade batista. O ponto de partida para todo discípulo.</div>
+          <div class="trilha-count">4 cursos disponíveis</div>
+        </div>
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">🔍</div>
+          <div class="trilha-name">Estudos Bíblicos</div>
+          <div class="trilha-desc">Hermenêutica, metodologia de estudo, livros específicos do Antigo e Novo Testamento em profundidade.</div>
+          <div class="trilha-count">5 cursos disponíveis</div>
+        </div>
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">🏠</div>
+          <div class="trilha-name">Família e Relacionamentos</div>
+          <div class="trilha-desc">Casamento, paternidade, criação de filhos e saúde emocional sob a perspectiva bíblica.</div>
+          <div class="trilha-count">3 cursos disponíveis</div>
+        </div>
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">🌿</div>
+          <div class="trilha-name">Discipulado e Crescimento</div>
+          <div class="trilha-desc">Como a fé se integra à vida cotidiana. Formação de caráter, disciplinas espirituais e caminhada com Deus.</div>
+          <div class="trilha-count">3 cursos disponíveis</div>
+        </div>
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">🎓</div>
+          <div class="trilha-name">Liderança e Ministério</div>
+          <div class="trilha-desc">Capacitação para líderes de células, ministérios, voluntários e quem sente chamado ao serviço.</div>
+          <div class="trilha-count">2 cursos disponíveis</div>
+        </div>
+        <div class="trilha-card fade-up">
+          <div class="trilha-icon">⛪</div>
+          <div class="trilha-name">Teologia Sistemática</div>
+          <div class="trilha-desc">Aprofundamento teológico para quem quer ir além. Apologética, história da igreja e pensamento cristão.</div>
+          <div class="trilha-count">2 cursos disponíveis</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURSOS EM DESTAQUE -->
+  <section class="cursos" id="cursos">
+    <div class="container">
+      <div class="cursos-header">
+        <div>
+          <span class="tag">2026.1</span>
+          <h2 class="section-title serif" style="margin-top:16px;">Cursos em Destaque</h2>
+        </div>
+        <a href="#" class="btn-outline">Ver todos os cursos</a>
+      </div>
+      <div class="cursos-grid">
+        <!-- Curso 1 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #1A2F55 0%, #2A4A80 100%);">
+            <div class="curso-thumb-icon">✦</div>
+            <div class="curso-thumb-badge">Fundamentos</div>
+            <div class="curso-thumb-format">Online</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Doutrinas Básicas I</div>
+            <div class="curso-desc">O ponto de partida para entender o que cremos e por quê. Salva­ção, Trindade, Escrituras e a fé batista.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                40 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Todos os níveis
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curso 2 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #2D1A45 0%, #4A3070 100%);">
+            <div class="curso-thumb-icon">📜</div>
+            <div class="curso-thumb-badge">Estudos Bíblicos</div>
+            <div class="curso-thumb-format">Híbrido</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Conheça o Antigo Testamento</div>
+            <div class="curso-desc">Uma jornada panorâmica pela narrativa do AT, seus gêneros, temas centrais e conexão com o Evangelho.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                60 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Intermediário
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curso 3 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #1A3525 0%, #2A5840 100%);">
+            <div class="curso-thumb-icon">💍</div>
+            <div class="curso-thumb-badge">Família</div>
+            <div class="curso-thumb-format">Presencial</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Escola de Casais</div>
+            <div class="curso-desc">Comunicação, conflito, propósito e intimidade no casamento — um espaço para crescer junto.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                24 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Casados
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curso 4 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #3A1A1A 0%, #6A2A2A 100%);">
+            <div class="curso-thumb-icon">🎯</div>
+            <div class="curso-thumb-badge">Liderança</div>
+            <div class="curso-thumb-format">Online</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Escola de Líderes</div>
+            <div class="curso-desc">Visão, caráter, gestão de pessoas e saúde ministerial para quem serve nos ministérios da igreja.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                48 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Líderes
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curso 5 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #1A2F55 0%, #B8882A 100%);">
+            <div class="curso-thumb-icon">🧭</div>
+            <div class="curso-thumb-badge">Discipulado</div>
+            <div class="curso-thumb-format">Híbrido</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Como as Pessoas Mudam</div>
+            <div class="curso-desc">Transformação pela graça: entendendo o processo de santificação e a dinâmica da mudança real e duradoura.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                32 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Todos os níveis
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Curso 6 -->
+        <div class="curso-card fade-up">
+          <div class="curso-thumb" style="background: linear-gradient(135deg, #1A3535 0%, #246060 100%);">
+            <div class="curso-thumb-icon">🌱</div>
+            <div class="curso-thumb-badge">Família</div>
+            <div class="curso-thumb-format">Presencial</div>
+          </div>
+          <div class="curso-body">
+            <div class="curso-title">Escola de Pais</div>
+            <div class="curso-desc">Criação de filhos com sabedoria bíblica. Como formar caráter, estabelecer limites e cultivar fé em casa.</div>
+            <div class="curso-meta">
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                20 horas
+              </div>
+              <div class="curso-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Pais e mães
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METODOLOGIA -->
+  <section class="metodologia" id="metodologia">
+    <div class="metodologia-bg"></div>
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Como Funciona</span>
+        <h2 class="section-title serif" style="margin-top:16px;">Sua jornada de aprendizado,<br/>passo a passo.</h2>
+        <p class="section-desc">Do primeiro acesso à conclusão com certificado — um processo simples, claro e pensado para caber na sua rotina.</p>
+      </div>
+      <div class="metodo-steps">
+        <div class="metodo-step">
+          <div class="metodo-step-number">01</div>
+          <div class="metodo-step-icon">🔍</div>
+          <div class="metodo-step-title">Escolha sua trilha</div>
+          <div class="metodo-step-desc">Explore as áreas de formação e encontre o curso que responde onde você está na sua jornada de fé.</div>
+        </div>
+        <div class="metodo-step">
+          <div class="metodo-step-number">02</div>
+          <div class="metodo-step-icon">📝</div>
+          <div class="metodo-step-title">Faça a matrícula</div>
+          <div class="metodo-step-desc">Inscrição simples, rápida e acessível. Sem burocracia — em minutos você está dentro.</div>
+        </div>
+        <div class="metodo-step">
+          <div class="metodo-step-number">03</div>
+          <div class="metodo-step-icon">📚</div>
+          <div class="metodo-step-title">Estude com profundidade</div>
+          <div class="metodo-step-desc">Aulas ao vivo, gravadas ou presenciais. Material de qualidade e professores da própria igreja.</div>
+        </div>
+        <div class="metodo-step">
+          <div class="metodo-step-number">04</div>
+          <div class="metodo-step-icon">🏅</div>
+          <div class="metodo-step-title">Receba seu certificado</div>
+          <div class="metodo-step-desc">Ao concluir, você recebe um certificado emitido pelo NEBI, válido e verificável digitalmente.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMATOS -->
+  <section class="formatos">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Formatos de Aula</span>
+        <h2 class="section-title serif" style="margin-top:16px;">Do jeito que funciona<br/>para você.</h2>
+        <p class="section-desc">Oferecemos três formatos para garantir que a formação caiba na sua agenda — sem abrir mão da qualidade.</p>
+      </div>
+      <div class="formatos-grid">
+        <div class="formato-card fade-up">
+          <span class="formato-emoji">🖥️</span>
+          <div class="formato-title">Online Gravado</div>
+          <div class="formato-desc">Estude no seu ritmo, quando e onde quiser. Acesso às aulas gravadas pela plataforma do NEBI, com material de apoio incluído.</div>
+          <span class="formato-tag">No seu tempo</span>
+        </div>
+        <div class="formato-card fade-up">
+          <span class="formato-emoji">📡</span>
+          <div class="formato-title">Online ao Vivo</div>
+          <div class="formato-desc">Aulas em tempo real com interação, perguntas e comunidade. Transmitidas pelo nosso ambiente virtual com participação ativa.</div>
+          <span class="formato-tag">Interativo</span>
+        </div>
+        <div class="formato-card fade-up">
+          <span class="formato-emoji">🏛️</span>
+          <div class="formato-title">Presencial</div>
+          <div class="formato-desc">Encontros mensais na sede da PIB Mogi. A experiência completa de comunidade, louvor e ensino com presença física.</div>
+          <span class="formato-tag">1x por mês</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="sobre" id="sobre">
+    <div class="container">
+      <div class="sobre-grid">
+        <div class="sobre-content">
+          <span class="tag">Nossa História</span>
+          <h2 class="section-title serif" style="margin-top:16px;">
+            Raízes profundas.<br/>
+            Visão de futuro.
+          </h2>
+          <p class="sobre-body">
+            A <strong>Primeira Igreja Batista de Mogi das Cruzes</strong> tem décadas de história de fidelidade ao Evangelho nesta cidade. O NEBI nasceu do entendimento de que uma igreja forte precisa de membros formados — não apenas participantes de cultos, mas discípulos que conhecem, vivem e transmitem a fé.
+          </p>
+          <div class="sobre-blockquote">
+            <p>"Que as palavras de Cristo habitem ricamente em vós, ensinando-vos e admoestando-vos uns aos outros."</p>
+            <cite>Colossenses 3:16</cite>
+          </div>
+          <p class="sobre-body">
+            O NEBI é fruto desse compromisso: oferecer ensino sólido, acessível e contextualizado para a realidade dos nossos membros, com excelência e cuidado pastoral em cada etapa.
+          </p>
+        </div>
+        <div class="sobre-visual">
+          <div class="sobre-img-wrap">
+            <img src="pibmogi.png" class="sobre-img" alt="Primeira Igreja Batista de Mogi das Cruzes" />
+            <div class="sobre-img-caption">
+              <div class="sobre-church-name">Primeira Igreja Batista<br/>de Mogi das Cruzes</div>
+              <div class="sobre-church-sub">Mogi das Cruzes · SP</div>
+            </div>
+          </div>
+          <div class="sobre-timeline">
+            <div class="sobre-tl-item">
+              <div class="sobre-tl-year">PIB</div>
+              <div class="sobre-tl-desc">Primeira Igreja Batista de Mogi das Cruzes</div>
+            </div>
+            <div class="sobre-tl-item">
+              <div class="sobre-tl-year">NEBI</div>
+              <div class="sobre-tl-desc">Núcleo de Ensino Bíblico — braço educacional</div>
+            </div>
+            <div class="sobre-tl-item">
+              <div class="sobre-tl-year">2026</div>
+              <div class="sobre-tl-desc">Nova plataforma digital de ensino</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPOIMENTOS -->
+  <section class="depoimentos" id="depoimentos">
+    <div class="container">
+      <div class="section-header" style="text-align:center; align-items:center; display:flex; flex-direction:column;">
+        <span class="tag">Quem já viveu</span>
+        <h2 class="section-title serif" style="margin-top:16px;">O que dizem nossos alunos</h2>
+        <p class="section-desc" style="margin:0 auto;">Vozes de quem passou pelo NEBI e voltou diferente.</p>
+      </div>
+      <div class="depo-grid">
+        <div class="depo-card fade-up">
+          <div class="depo-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="depo-quote-mark">"</div>
+          <div class="depo-text">O curso de Doutrinas Básicas mudou minha forma de ler a Bíblia. Pela primeira vez eu entendia o que lia — e conseguia explicar para outras pessoas. Transformador.</div>
+          <div class="depo-author">
+            <div class="depo-avatar">M</div>
+            <div>
+              <div class="depo-name">Marcos Oliveira</div>
+              <div class="depo-role">Membro da PIB Mogi · turma 2025.1</div>
+            </div>
+          </div>
+        </div>
+        <div class="depo-card fade-up">
+          <div class="depo-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="depo-quote-mark">"</div>
+          <div class="depo-text">A Escola de Casais foi um presente para o nosso relacionamento. A abordagem bíblica e prática nos deu ferramentas reais. Indicamos para todo casal da nossa célula.</div>
+          <div class="depo-author">
+            <div class="depo-avatar">A</div>
+            <div>
+              <div class="depo-name">Ana e Paulo Santos</div>
+              <div class="depo-role">Líderes de célula · turma 2024.2</div>
+            </div>
+          </div>
+        </div>
+        <div class="depo-card fade-up">
+          <div class="depo-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="depo-quote-mark">"</div>
+          <div class="depo-text">Pensava que teologia era coisa de pastor. O NEBI me mostrou que todo crente precisa conhecer a fé que professa. Saí do curso querendo mais — já me inscrevi no próximo.</div>
+          <div class="depo-author">
+            <div class="depo-avatar">C</div>
+            <div>
+              <div class="depo-name">Camila Ferreira</div>
+              <div class="depo-role">Voluntária no ministério infantil · turma 2025.2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="cta">
+    <div class="cta-bg"></div>
+    <div class="container">
+      <span class="tag">Turma 2026.1 aberta</span>
+      <h2 class="cta-title">
+        Pronto para crescer<br/>
+        na <em>Palavra?</em>
+      </h2>
+      <p class="cta-desc">
+        Vagas limitadas por turma. Garanta seu lugar e comece sua jornada de formação bíblica na PIB Mogi.
+      </p>
+      <div class="cta-actions">
+        <a href="#" class="btn-cta-primary">Inscreva-se agora</a>
+        <a href="#cursos" class="btn-cta-ghost">Ver todos os cursos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand-logo">NEBI</div>
+          <div class="footer-brand-sub">Núcleo de Ensino Bíblico</div>
+          <div class="footer-brand-desc">
+            O braço de formação teológica da Primeira Igreja Batista de Mogi das Cruzes — ensino sólido, comunidade real, fé aplicada.
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Plataforma</div>
+          <ul class="footer-links">
+            <li><a href="#">Todos os Cursos</a></li>
+            <li><a href="#">Programas</a></li>
+            <li><a href="#">Trilhas de Ensino</a></li>
+            <li><a href="#">Como Funciona</a></li>
+            <li><a href="#">Certificados</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Institucional</div>
+          <ul class="footer-links">
+            <li><a href="#">Sobre o NEBI</a></li>
+            <li><a href="#">A Igreja</a></li>
+            <li><a href="#">Professores</a></li>
+            <li><a href="#">Política de Privacidade</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Contato</div>
+          <ul class="footer-links">
+            <li><a href="#">WhatsApp</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="#">nebi@pibmogi.com.br</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 NEBI · Todos os direitos reservados</span>
+        <span class="footer-church">Primeira Igreja Batista de Mogi das Cruzes</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Navbar scroll effect
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        nav.style.boxShadow = '0 4px 24px rgba(26,47,85,.12)';
+      } else {
+        nav.style.boxShadow = 'none';
+      }
+    });
+
+    // Smooth active nav on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const top = section.offsetTop - 100;
+        if (window.scrollY >= top) current = section.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + current
+          ? 'var(--navy)'
+          : '';
+        link.style.fontWeight = link.getAttribute('href') === '#' + current
+          ? '700'
+          : '';
+      });
+    });
+
+    // Counter animation for hero stats
+    function animateCounter(el, target, suffix) {
+      let start = 0;
+      const duration = 1800;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (Math.floor(eased * target) + suffix);
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+  </script>
+</body>
+</html>
