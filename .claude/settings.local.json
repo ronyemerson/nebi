@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "WebFetch(domain:nebi.com.br)",
-      "WebFetch(domain:redcollege.igrejared.com)",
-      "WebFetch(domain:www.escolavirtual.gov.br)"
-    ]
-  }
-}
